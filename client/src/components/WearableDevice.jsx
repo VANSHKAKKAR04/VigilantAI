@@ -22,16 +22,20 @@ const FitbitIntegration = () => {
   const alertSent = useRef(false);
 
   // Fitbit OAuth configuration
-  const CLIENT_ID = '23QBVG';
-  const REDIRECT_URI = 'http://localhost:5174/wearable';
-  const FITBIT_AUTH_URL = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=activity heartrate&expires_in=604800`;
-  
+  const CLIENT_ID = import.meta.env.VITE_FITBIT_CLIENT_ID || '';
+  const REDIRECT_URI = import.meta.env.VITE_FITBIT_REDIRECT_URI || 'http://localhost:5174/wearable';
+  const FITBIT_AUTH_URL = CLIENT_ID
+    ? `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=activity heartrate&expires_in=604800`
+    : '';
+
   // Your backend API URL
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   // Telegram Bot API configuration
-  const TELEGRAM_BOT_TOKEN = '8038392267:AAExoT3gEZdhgWpdhRKpQktTkoyHeEC2MM8'; // Replace with your bot token
-  const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '';
+  const TELEGRAM_API_URL = TELEGRAM_BOT_TOKEN
+    ? `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
+    : '';
 
   // Log debugging information
   const logDebug = (key, value) => {
@@ -275,6 +279,11 @@ const FitbitIntegration = () => {
   // Send alerts to emergency contacts using Telegram Bot
   const sendDistressAlert = async (currentHeartRate) => {
     if (alertSent.current) return;
+
+    if (!TELEGRAM_API_URL) {
+      setError('Telegram bot token is missing. Add VITE_TELEGRAM_BOT_TOKEN to your client .env file.');
+      return;
+    }
 
     logDebug('Sending distress alert', {
       contacts: emergencyContacts.length,

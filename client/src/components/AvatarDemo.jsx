@@ -34,6 +34,8 @@ const LegalAdvisorAvatar = () => {
   }, [listening]);
 
   // 🔹 Fetch HeyGen Token
+  const LEGAL_ADVICE_API_URL = import.meta.env.VITE_LEGAL_ADVICE_API_URL || "http://localhost:5000";
+
   const fetchAccessToken = async () => {
     try {
       const apiKey = import.meta.env.VITE_HEYGEN_API_KEY; // Get API key from .env
@@ -134,7 +136,7 @@ const LegalAdvisorAvatar = () => {
       const userQuery = userInputRef.current?.value || "Give me legal advice";
       console.log("Sending query to backend:", userQuery);
       
-      const response = await fetch("http://localhost:5000/legal-advice", {
+      const response = await fetch(`${LEGAL_ADVICE_API_URL}/legal-advice`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -170,7 +172,7 @@ const LegalAdvisorAvatar = () => {
       console.error("❌ Error fetching legal advice:", error);
       
       // Provide more detailed error info
-      const errorMessage = `Error: ${error.message}. Please check if the server is running at http://localhost:5000`;
+      const errorMessage = `Error: ${error.message}. Please check if the server is running at ${LEGAL_ADVICE_API_URL}`;
       console.error(errorMessage);
       
       // Use sample legal advice if the backend call fails

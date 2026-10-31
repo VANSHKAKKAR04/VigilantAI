@@ -7,7 +7,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet"
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const ORS_API_KEY = "5b3ce3597851110001cf6248f19e6b13145048fe9f96e65ce3677ca4"; // Get this from OpenRouteService
+const ORS_API_KEY = import.meta.env.VITE_OPENROUTESERVICE_API_KEY || "";
 
 const { Header, Content, Footer } = Layout;
 
@@ -43,6 +43,13 @@ const SafeRouteFinder = () => {
 
   // Function to find the safest route
   const findSafeRoute = async () => {
+    if (!ORS_API_KEY) {
+      notification.error({
+        message: "OpenRouteService API key is missing. Add VITE_OPENROUTESERVICE_API_KEY to your client .env file.",
+      });
+      return;
+    }
+
     if (!startLocation || !endLocation) {
       notification.error({ message: "Please enter both locations!" });
       return;
